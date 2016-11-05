@@ -2,26 +2,30 @@
 
 - Minikube
 - Docker
+- Docker HUB account (or modify code to use local repo/ copy images to the Minikube node)  
 
-# Create binaries
+# Create binaries (v1.0 and v2.0)
 git clone https://github.com/embano1/Docker_Demo  
 cd Docker_Demo  
+git checkout v1.0  
 bash build  
 docker build -t \<Docker_Hub_Username\>/docker_demo:1.0 .  
 docker push \<Docker_Hub_Username\>/docker_demo  
+git checkout v2.0  
+docker build -t \<Docker_Hub_Username\>/docker_demo:2.0 .  
+docker push \<Docker_Hub_Username\>/docker_demo 
 
 # Kubernetes (minikube)
-kubectl run dockerdemo --image=\<Docker_Hub_Username\>/docker_demo:1.0 --port=8080  
+kubectl run dockerdemo --image=\<Docker_Hub_Username\>/docker_demo:1.0 --port=8080 --record  
 kubectl expose deployment dockerdemo --type=NodePort --port=8080 --target-port=8080  
-kubectl describe svc dockerdemo | grep NodePort  
+kubectl describe svc dockerdemo | grep NodePort (to access the service from outside the Kubernetes cluster)  
 
 # Do some scaling
-while true; do curl 192.168.99.100:\<NodePort\>; sleep 1; done  
-kubectl scale --replicas=10 deployment/dockerdemo  
+while true; do curl \<minikube_IP\>:\<NodePort\>; sleep 1; done  
+kubectl scale --replicas=10 deployment/dockerdemo --record   
 
 # Watch pods, curl (see above) and update image
 kubectl get pods -w  
-\<make some changes to the image, update image version to 2.0, details see above\>  
 kubetctl set image deployment/dockerdemo dockerdemo=\<Docker_Hub_Username\>/docker_demo:2.0 --record  
 kubectl rollout status deployment/dockerdemo
 
