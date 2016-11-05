@@ -7,19 +7,27 @@
 git clone https://github.com/embano1/Docker_Demo  
 cd Docker_Demo  
 bash build  
-docker build -t <Docker_Hub_Username>/docker_demo:1.0 .  
-docker push <Docker_Hub_Username>/docker_demo  
+docker build -t \<Docker_Hub_Username\>/docker_demo:1.0 .  
+docker push \<Docker_Hub_Username\>/docker_demo  
 
 # Kubernetes (minikube)
-kubectl run dockerdemo --image=<Docker_Hub_Username>/docker_demo:1.0 --port=8080  
+kubectl run dockerdemo --image=\<Docker_Hub_Username\>/docker_demo:1.0 --port=8080  
 kubectl expose deployment dockerdemo --type=NodePort --port=8080 --target-port=8080  
 kubectl describe svc dockerdemo | grep NodePort  
 
 # Do some scaling
-while true; do curl 192.168.99.100:<NodePort>; sleep 1; done  
+while true; do curl 192.168.99.100:\<NodePort\>; sleep 1; done  
 kubectl scale --replicas=10 deployment/dockerdemo  
 
 # Watch pods, curl (see above) and update image
 kubectl get pods -w  
 \<make some changes to the image, update image version to 2.0, details see above\>  
-kubetctl set image deployment/dockerdemo dockerdemo=<Docker_Hub_Username>/docker_demo:2.0  
+kubetctl set image deployment/dockerdemo dockerdemo=\<Docker_Hub_Username\>/docker_demo:2.0 --record  
+kubectl rollout status deployment/dockerdemo
+
+# History of rollouts (--record)
+kubectl rollout history deployment dockerdemo  
+kubectl rollout history deployment dockerdemo --revision=\<e.g. #8\>  
+
+# Undo/ revert update (rollout)
+kubectl rollout undo deployment/dockerdemo --to-revision=\<e.g. #6 if exists\>  
