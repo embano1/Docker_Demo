@@ -26,7 +26,7 @@ kubectl scale --replicas=10 deployment/dockerdemo --record
 
 # Watch pods, curl (see above) and update image
 kubectl get pods -w  
-kubetctl set image deployment/dockerdemo dockerdemo=\<Docker_Hub_Username\>/docker_demo:2.0 --record  
+kubectl set image deployment/dockerdemo dockerdemo=\<Docker_Hub_Username\>/docker_demo:2.0 --record  
 kubectl rollout status deployment/dockerdemo
 
 # History of rollouts (--record)
